@@ -1,6 +1,6 @@
 """
 VulnForge — Enterprise Automated VAPT & Security Assessment Platform
-Version: 2.0.0 (High-Contrast Enterprise Dark Edition)
+Version: 2.0.0 (High-Contrast Ultra-Readable Edition)
 """
 
 import sys
@@ -31,93 +31,101 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- High-Contrast Enterprise Dark Design System ---
+# --- High-Contrast Ultra-Readable Design System ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-    /* Global Theme Overrides */
+    /* Global Typography & Palette */
     html, body, [class*="css"], .stApp {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         background-color: #07090e !important;
-        color: #f8fafc !important;
+        color: #ffffff !important;
     }
 
-    /* Top Header */
+    /* Top Navigation Header */
     header[data-testid="stHeader"] {
-        background-color: rgba(7, 9, 14, 0.95) !important;
+        background-color: #07090e !important;
     }
     
-    /* Sidebar Styling & High Contrast */
+    /* Sidebar Global */
     section[data-testid="stSidebar"] {
-        background-color: #0e1422 !important;
+        background-color: #0d121f !important;
         border-right: 1px solid #1e293b !important;
     }
 
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] span,
-    section[data-testid="stSidebar"] div {
-        color: #f1f5f9 !important;
+    /* Force ALL Sidebar text to bright readable white */
+    section[data-testid="stSidebar"] * {
+        color: #ffffff !important;
     }
 
-    /* Sidebar Radio Navigation Items */
-    section[data-testid="stSidebar"] .stRadio label {
-        color: #ffffff !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        padding: 6px 10px !important;
-        border-radius: 6px !important;
-        transition: all 0.15s ease !important;
-    }
-    section[data-testid="stSidebar"] .stRadio label:hover {
-        background-color: #1e293b !important;
-        color: #38bdf8 !important;
-    }
-    section[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p {
+    section[data-testid="stSidebar"] .stRadio label,
+    section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+    section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] span {
         color: #ffffff !important;
         font-size: 14px !important;
         font-weight: 600 !important;
     }
 
-    /* High Contrast Dropdowns & Inputs */
+    /* Unselected & Selected Radio Navigation Items */
+    section[data-testid="stSidebar"] [data-testid="stRadio"] label {
+        background-color: #131a2b !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+        transition: all 0.15s ease !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+        background-color: #1e293b !important;
+        border-color: #38bdf8 !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stRadio"] label p,
+    section[data-testid="stSidebar"] [data-testid="stRadio"] label span {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+
+    /* Dark Dropdowns & Selectboxes */
     div[data-baseweb="select"] > div {
-        background-color: #131b2e !important;
-        border-color: #2a3a55 !important;
+        background-color: #131a2b !important;
+        border: 1px solid #334155 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
     }
     div[data-baseweb="select"] * {
         color: #ffffff !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
     }
-    div[data-baseweb="popover"] ul, div[data-baseweb="menu"] {
-        background-color: #131b2e !important;
-        border: 1px solid #2a3a55 !important;
+    div[data-baseweb="popover"], div[data-baseweb="menu"] {
+        background-color: #131a2b !important;
+        border: 1px solid #334155 !important;
     }
     div[data-baseweb="popover"] li {
         color: #ffffff !important;
     }
 
+    /* Text Inputs */
     div[data-baseweb="input"] > div {
-        background-color: #131b2e !important;
-        border-color: #2a3a55 !important;
+        background-color: #131a2b !important;
+        border: 1px solid #334155 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
     }
     input, textarea {
         color: #ffffff !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
     }
 
-    /* Typography Hierarchy & High Contrast */
-    h1 { font-size: 24px !important; font-weight: 800 !important; color: #ffffff !important; letter-spacing: -0.5px !important; }
-    h2 { font-size: 20px !important; font-weight: 800 !important; color: #ffffff !important; }
-    h3 { font-size: 17px !important; font-weight: 700 !important; color: #ffffff !important; }
-    h4 { font-size: 15px !important; font-weight: 700 !important; color: #ffffff !important; }
+    /* Typography & Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+    }
     
     p, .stMarkdown p {
-        color: #cbd5e1 !important;
+        color: #e2e8f0 !important;
         font-size: 14px !important;
         line-height: 1.6 !important;
     }
@@ -129,30 +137,27 @@ st.markdown("""
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 18px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-    }
-    .vf-card:hover {
-        border-color: #334155;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
 
     .vf-card-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #172554 100%);
-        border: 1px solid #2563eb;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid #3b82f6;
         border-radius: 14px;
         padding: 24px;
         margin-bottom: 22px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
 
     .vf-stat-card {
         background: #0f172a;
-        border: 1px solid #1e293b;
+        border: 1px solid #334155;
         border-radius: 10px;
         padding: 16px;
         text-align: left;
     }
 
-    /* High Contrast Severity Badges */
+    /* High Contrast Severity Pills */
     .pill {
         display: inline-flex;
         align-items: center;
@@ -163,20 +168,21 @@ st.markdown("""
         font-weight: 800;
         letter-spacing: 0.5px;
         text-transform: uppercase;
+        color: #ffffff !important;
     }
-    .pill-critical { background: #e11d48; color: #ffffff; border: 1px solid #fb7185; }
-    .pill-high { background: #ea580c; color: #ffffff; border: 1px solid #fdba74; }
-    .pill-medium { background: #ca8a04; color: #ffffff; border: 1px solid #fef08a; }
-    .pill-low { background: #0284c7; color: #ffffff; border: 1px solid #7dd3fc; }
-    .pill-info { background: #475569; color: #ffffff; border: 1px solid #94a3b8; }
-    .pill-good { background: #059669; color: #ffffff; border: 1px solid #6ee7b7; }
+    .pill-critical { background: #e11d48; border: 1px solid #fb7185; }
+    .pill-high { background: #ea580c; border: 1px solid #fdba74; }
+    .pill-medium { background: #ca8a04; border: 1px solid #fef08a; color: #ffffff !important; }
+    .pill-low { background: #0284c7; border: 1px solid #7dd3fc; }
+    .pill-info { background: #475569; border: 1px solid #94a3b8; }
+    .pill-good { background: #059669; border: 1px solid #6ee7b7; }
 
     /* Stepper Bar */
     .vf-stepper {
         display: flex;
         justify-content: space-between;
         background: #0f172a;
-        border: 1px solid #1e293b;
+        border: 1px solid #334155;
         border-radius: 10px;
         padding: 12px 18px;
         margin-bottom: 22px;
@@ -184,31 +190,23 @@ st.markdown("""
     .vf-step-item {
         font-size: 13px;
         font-weight: 700;
-        color: #94a3b8;
+        color: #94a3b8 !important;
     }
     .vf-step-active {
-        color: #38bdf8;
-        font-weight: 800;
+        color: #38bdf8 !important;
+        font-weight: 900 !important;
     }
 
     /* Monospace Code Evidence Box */
     .vf-evidence-block {
         font-family: 'JetBrains Mono', monospace !important;
         background: #020617 !important;
-        border: 1px solid #1e293b !important;
+        border: 1px solid #334155 !important;
         border-radius: 8px;
         padding: 14px;
         font-size: 13px;
-        color: #38bdf8;
+        color: #38bdf8 !important;
         overflow-x: auto;
-    }
-
-    /* Brand Logo Text */
-    .brand-title {
-        font-size: 24px;
-        font-weight: 900;
-        color: #38bdf8;
-        letter-spacing: -0.5px;
     }
 
     /* Buttons */
@@ -217,11 +215,15 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid #60a5fa !important;
         border-radius: 8px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         font-size: 14px !important;
-        padding: 10px 20px !important;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+        padding: 10px 22px !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
         transition: all 0.15s ease !important;
+    }
+    .stButton > button * {
+        color: #ffffff !important;
+        font-weight: 800 !important;
     }
     .stButton > button:hover {
         background: #1d4ed8 !important;
@@ -285,20 +287,20 @@ def calculate_posture_score(findings):
 # SIDEBAR NAVIGATION & ENTERPRISE CONSOLE
 # ==============================================================================
 with st.sidebar:
-    st.markdown("<div class='brand-title'>🛡️ VULNFORGE</div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:12px;'>Automated VAPT & Perimeter Defense v2.0</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:24px; font-weight:900; color:#38bdf8; letter-spacing:-0.5px;'>🛡️ VULNFORGE</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:700; color:#94a3b8; margin-bottom:14px;'>Automated VAPT & Perimeter Defense v2.0</div>", unsafe_allow_html=True)
     
     st.divider()
 
     # Workspace & Perspective
-    st.markdown("<div style='font-size:11px; font-weight:800; color:#94a3b8; letter-spacing:0.5px;'>ORGANIZATION WORKSPACE</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:800; color:#cbd5e1; letter-spacing:0.5px;'>ORGANIZATION WORKSPACE</div>", unsafe_allow_html=True)
     workspace = st.selectbox(
         "Workspace",
         ["Acme Global Security [Prod]", "Staging Perimeter", "Internal Lab Cluster"],
         label_visibility="collapsed"
     )
 
-    st.markdown("<div style='font-size:11px; font-weight:800; color:#94a3b8; letter-spacing:0.5px; margin-top:12px;'>EXPERIENCE PERSPECTIVE</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:800; color:#cbd5e1; letter-spacing:0.5px; margin-top:12px;'>EXPERIENCE PERSPECTIVE</div>", unsafe_allow_html=True)
     view_mode = st.selectbox(
         "View Mode",
         ["Beginner Mode (Guided)", "Professional Mode (Full Telemetry)", "Executive Mode (Risk Posture)", "Developer Mode (Code Fixes)"],
@@ -309,7 +311,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("<div style='font-size:11px; font-weight:800; color:#94a3b8; letter-spacing:0.5px; margin-bottom:8px;'>NAVIGATION MENU</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:800; color:#cbd5e1; letter-spacing:0.5px; margin-bottom:8px;'>NAVIGATION MENU</div>", unsafe_allow_html=True)
     menu = st.radio(
         "Navigation",
         [
@@ -330,9 +332,9 @@ with st.sidebar:
     st.divider()
 
     # Subsystem Heartbeat Widget
-    st.markdown("<div style='font-size:11px; font-weight:800; color:#94a3b8; letter-spacing:0.5px; margin-bottom:6px;'>SYSTEM ENGINES</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:800; color:#cbd5e1; letter-spacing:0.5px; margin-bottom:6px;'>SYSTEM ENGINES</div>", unsafe_allow_html=True)
     st.markdown("""
-    <div style='font-size:12px; line-height:1.8; color:#cbd5e1;'>
+    <div style='font-size:12px; line-height:1.9; color:#e2e8f0;'>
         <span style='color:#34d399; font-weight:bold;'>●</span> Recon OSINT: <strong style='color:#ffffff;'>ONLINE</strong><br/>
         <span style='color:#34d399; font-weight:bold;'>●</span> Web Sec Engine: <strong style='color:#ffffff;'>ONLINE</strong><br/>
         <span style='color:#34d399; font-weight:bold;'>●</span> SSRF Guard: <strong style='color:#ffffff;'>ENFORCED</strong><br/>
@@ -349,8 +351,8 @@ if menu == "📊 Executive Dashboard":
     st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <div>
-            <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Security Posture Command Center</h1>
-            <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Continuous perimeter intelligence & attack surface evaluation</p>
+            <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Security Posture Command Center</h1>
+            <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Continuous perimeter intelligence & attack surface evaluation</p>
         </div>
         <div>
             <span class="pill pill-good">● LIVE TELEMETRY</span>
@@ -364,7 +366,7 @@ if menu == "📊 Executive Dashboard":
         st.markdown("""
         <div class="vf-card-hero">
             <h3 style="margin-top:0; font-size:20px; font-weight:800; color:#ffffff;">No Active Assessment Data in Current Session</h3>
-            <p style="font-size:14px; color:#cbd5e1; max-width:700px; line-height:1.6;">Launch an automated security assessment against your authorized target URL or load synthetic benchmark results to inspect security posture metrics, risk drivers, and remediation workflows.</p>
+            <p style="font-size:14px; color:#f1f5f9; max-width:700px; line-height:1.6;">Launch an automated security assessment against your authorized target URL or load synthetic benchmark results to inspect security posture metrics, risk drivers, and remediation workflows.</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -410,22 +412,22 @@ if menu == "📊 Executive Dashboard":
 
         # Hero Posture Card
         status_label = "EXCELLENT" if posture_score >= 90 else ("GOOD" if posture_score >= 75 else "NEEDS ATTENTION")
-        status_color = "#34d399" if posture_score >= 75 else "#f43f5e"
+        status_bg = "#059669" if posture_score >= 75 else "#e11d48"
 
         st.markdown(f"""
         <div class="vf-card-hero">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
                 <div>
-                    <div style="font-size:12px; font-weight:800; color:#93c5fd; letter-spacing:1px; text-transform:uppercase;">OVERALL PERIMETER SECURITY POSTURE</div>
-                    <div style="display:flex; align-items:baseline; gap:12px; margin-top:4px;">
-                        <span style="font-size:46px; font-weight:900; color:#ffffff; letter-spacing:-1px;">{posture_score} <span style="font-size:22px; color:#94a3b8;">/ 100</span></span>
-                        <span style="font-size:14px; font-weight:800; color:{status_color}; background:#0f172a; padding:6px 12px; border-radius:6px; border:1px solid #334155;">{status_label}</span>
+                    <div style="font-size:13px; font-weight:800; color:#93c5fd; letter-spacing:1px; text-transform:uppercase;">OVERALL PERIMETER SECURITY POSTURE</div>
+                    <div style="display:flex; align-items:baseline; gap:14px; margin-top:6px;">
+                        <span style="font-size:48px; font-weight:900; color:#ffffff; letter-spacing:-1px;">{posture_score} <span style="font-size:22px; color:#94a3b8;">/ 100</span></span>
+                        <span style="font-size:14px; font-weight:900; color:#ffffff; background:{status_bg}; padding:6px 14px; border-radius:6px;">{status_label}</span>
                     </div>
-                    <p style="font-size:14px; color:#cbd5e1; margin:8px 0 0 0;">Evaluated across <strong style="color:#ffffff;">{len(findings)} findings</strong>. Immediate remediation recommended for <strong style="color:#fb7185;">{crit_count + high_count} critical/high</strong> security driver(s).</p>
+                    <p style="font-size:14px; color:#e2e8f0; margin:8px 0 0 0;">Evaluated across <strong style="color:#ffffff;">{len(findings)} findings</strong>. Immediate remediation recommended for <strong style="color:#fb7185;">{crit_count + high_count} critical/high</strong> security driver(s).</p>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:12px; color:#94a3b8; font-weight:700;">ACTIVE TARGET</div>
-                    <div style="font-size:15px; font-family:monospace; color:#38bdf8; font-weight:800;">{findings[0].get('asset_target', 'https://target.sec')}</div>
+                    <div style="font-size:12px; color:#cbd5e1; font-weight:700;">ACTIVE TARGET</div>
+                    <div style="font-size:16px; font-family:monospace; color:#38bdf8; font-weight:900;">{findings[0].get('asset_target', 'https://target.sec')}</div>
                 </div>
             </div>
         </div>
@@ -437,40 +439,40 @@ if menu == "📊 Executive Dashboard":
             st.markdown(f"""
             <div class="vf-stat-card">
                 <div style="font-size:12px; font-weight:800; color:#fb7185;">● CRITICAL RISKS</div>
-                <div style="font-size:30px; font-weight:900; color:#ffffff; margin-top:4px;">{crit_count}</div>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Immediate Action (24h SLA)</div>
+                <div style="font-size:32px; font-weight:900; color:#ffffff; margin-top:4px;">{crit_count}</div>
+                <div style="font-size:12px; font-weight:600; color:#cbd5e1; margin-top:4px;">Immediate Action (24h SLA)</div>
             </div>
             """, unsafe_allow_html=True)
         with c2:
             st.markdown(f"""
             <div class="vf-stat-card">
                 <div style="font-size:12px; font-weight:800; color:#fb923c;">● HIGH SEVERITY</div>
-                <div style="font-size:30px; font-weight:900; color:#ffffff; margin-top:4px;">{high_count}</div>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">7-Day Mitigation SLA</div>
+                <div style="font-size:32px; font-weight:900; color:#ffffff; margin-top:4px;">{high_count}</div>
+                <div style="font-size:12px; font-weight:600; color:#cbd5e1; margin-top:4px;">7-Day Mitigation SLA</div>
             </div>
             """, unsafe_allow_html=True)
         with c3:
             st.markdown(f"""
             <div class="vf-stat-card">
                 <div style="font-size:12px; font-weight:800; color:#facc15;">● MEDIUM SEVERITY</div>
-                <div style="font-size:30px; font-weight:900; color:#ffffff; margin-top:4px;">{med_count}</div>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Sprint Backlog</div>
+                <div style="font-size:32px; font-weight:900; color:#ffffff; margin-top:4px;">{med_count}</div>
+                <div style="font-size:12px; font-weight:600; color:#cbd5e1; margin-top:4px;">Sprint Backlog</div>
             </div>
             """, unsafe_allow_html=True)
         with c4:
             st.markdown(f"""
             <div class="vf-stat-card">
-                <div style="font-size:12px; font-weight:800; color:#38bdf8;">● LOW / INFORMATIONAL</div>
-                <div style="font-size:30px; font-weight:900; color:#ffffff; margin-top:4px;">{low_count}</div>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Hardening Best Practices</div>
+                <div style="font-size:12px; font-weight:800; color:#38bdf8;">● LOW / INFO</div>
+                <div style="font-size:32px; font-weight:900; color:#ffffff; margin-top:4px;">{low_count}</div>
+                <div style="font-size:12px; font-weight:600; color:#cbd5e1; margin-top:4px;">Hardening Best Practices</div>
             </div>
             """, unsafe_allow_html=True)
         with c5:
             st.markdown(f"""
             <div class="vf-stat-card">
                 <div style="font-size:12px; font-weight:800; color:#c084fc;">● TOTAL FINDINGS</div>
-                <div style="font-size:30px; font-weight:900; color:#ffffff; margin-top:4px;">{len(findings)}</div>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Correlated Issues</div>
+                <div style="font-size:32px; font-weight:900; color:#ffffff; margin-top:4px;">{len(findings)}</div>
+                <div style="font-size:12px; font-weight:600; color:#cbd5e1; margin-top:4px;">Correlated Issues</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -480,7 +482,7 @@ if menu == "📊 Executive Dashboard":
         col_main, col_side = st.columns([2, 1])
         
         with col_main:
-            st.markdown("<h3 style='font-size:18px; font-weight:800; color:#ffffff; margin-bottom:14px;'>🎯 Priority Attention Required</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='font-size:18px; font-weight:900; color:#ffffff; margin-bottom:14px;'>🎯 Priority Attention Required</h3>", unsafe_allow_html=True)
             
             # Sort top 3 findings by severity
             def sev_weight(f):
@@ -498,17 +500,17 @@ if menu == "📊 Executive Dashboard":
                         <span style="font-size:15px; font-weight:800; color:#ffffff;">#{idx}. {f['title']}</span>
                         <span class="pill {badge_class}">● {sev}</span>
                     </div>
-                    <div style="font-size:12px; color:#94a3b8; margin-top:6px; font-family:monospace;">
-                        Endpoint: <code style="color:#38bdf8;">{f.get('endpoint', '/')}</code> &bull; CVSS: <strong style="color:#ffffff;">{f.get('cvss_score', 'N/A')}</strong> &bull; Source: {f.get('scanner', 'VulnForge')}
+                    <div style="font-size:13px; color:#cbd5e1; margin-top:6px; font-family:monospace;">
+                        Endpoint: <code style="color:#38bdf8; font-weight:bold;">{f.get('endpoint', '/')}</code> &bull; CVSS: <strong style="color:#ffffff;">{f.get('cvss_score', 'N/A')}</strong> &bull; Source: {f.get('scanner', 'VulnForge')}
                     </div>
-                    <div style="background:#020617; padding:10px 14px; border-radius:6px; font-size:12px; color:#93c5fd; border-left:3px solid #3b82f6; margin-top:10px;">
-                        <strong style="color:#ffffff;">Direct Action:</strong> {f.get('remediation', 'Consult fix guide.')}
+                    <div style="background:#070d1e; border:1px solid #1e3a8a; padding:12px 16px; border-radius:6px; font-size:13px; color:#ffffff; border-left:4px solid #38bdf8; margin-top:10px;">
+                        <strong style="color:#38bdf8;">Direct Action:</strong> {f.get('remediation', 'Consult fix guide.')}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
         with col_side:
-            st.markdown("<h3 style='font-size:18px; font-weight:800; color:#ffffff; margin-bottom:14px;'>📈 Severity Breakdown</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='font-size:18px; font-weight:900; color:#ffffff; margin-bottom:14px;'>📈 Severity Breakdown</h3>", unsafe_allow_html=True)
             df_counts = pd.DataFrame([
                 {"Severity": "Critical", "Count": crit_count},
                 {"Severity": "High", "Count": high_count},
@@ -524,8 +526,8 @@ if menu == "📊 Executive Dashboard":
 elif menu == "🚀 Assessment Wizard":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Automated Security Assessment Wizard</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Configure scoped reconnaissance and web application vulnerability checks</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Automated Security Assessment Wizard</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Configure scoped reconnaissance and web application vulnerability checks</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -594,7 +596,7 @@ elif menu == "🚀 Assessment Wizard":
         st.markdown(f"""
         <div class="vf-card">
             <h4 style="font-size:14px; font-weight:800; color:#93c5fd; margin-top:0; text-transform:uppercase;">Scan Configuration Summary</h4>
-            <div style="font-size:13px; color:#e2e8f0; line-height:1.9;">
+            <div style="font-size:13px; color:#f1f5f9; line-height:1.9;">
                 • <strong style="color:#ffffff;">Target Host:</strong> <code style="color:#38bdf8; font-weight:bold;">{target_input}</code><br/>
                 • <strong style="color:#ffffff;">Profile:</strong> {assessment_profile.split('(')[0].strip()}<br/>
                 • <strong style="color:#ffffff;">SSRF Defense:</strong> {'Lab Mode (Private Allowed)' if allow_lab else 'Strict (Public IPs Only)'}<br/>
@@ -602,7 +604,7 @@ elif menu == "🚀 Assessment Wizard":
                 • <strong style="color:#ffffff;">Rate Limit:</strong> {rate_limit} req/sec<br/>
                 • <strong style="color:#ffffff;">Timeout:</strong> 10s per probe<br/>
             </div>
-            <div style="margin-top:16px; padding:12px; background:#020617; border-radius:6px; font-size:12px; color:#94a3b8; line-height:1.5;">
+            <div style="margin-top:16px; padding:12px; background:#020617; border-radius:6px; font-size:12px; color:#cbd5e1; line-height:1.5;">
                 🛡️ <em>Zero intrusive payloads are executed. Only passive reconnaissance and standard HTTP RFC protocol checks are dispatched.</em>
             </div>
         </div>
@@ -709,8 +711,8 @@ elif menu == "🚀 Assessment Wizard":
 elif menu == "🎯 Priority Fixes (#1 First)":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">What Should I Fix First?</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Multi-dimensional algorithmic prioritization factoring in Exploitability, Exposure, CVSS, and Confidence</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">What Should I Fix First?</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Multi-dimensional algorithmic prioritization factoring in Exploitability, Exposure, CVSS, and Confidence</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -739,11 +741,11 @@ elif menu == "🎯 Priority Fixes (#1 First)":
                         <span style="font-size:12px; background:#1e293b; color:#ffffff; padding:4px 10px; border-radius:6px; font-family:monospace; font-weight:bold; margin-left:6px;">CVSS {f.get('cvss_score', 'N/A')}</span>
                     </div>
                 </div>
-                <div style="font-size:13px; color:#94a3b8; margin-top:8px;">
-                    Target: <code style="color:#38bdf8;">{f.get('asset_target', '')}{f.get('endpoint', '')}</code> &bull; CWE: <strong style="color:#ffffff;">{f.get('cwe', 'N/A')}</strong> &bull; Engine: {f.get('scanner', 'Custom')}
+                <div style="font-size:13px; color:#cbd5e1; margin-top:8px;">
+                    Target: <code style="color:#38bdf8; font-weight:bold;">{f.get('asset_target', '')}{f.get('endpoint', '')}</code> &bull; CWE: <strong style="color:#ffffff;">{f.get('cwe', 'N/A')}</strong> &bull; Engine: {f.get('scanner', 'Custom')}
                 </div>
-                <div style="background:#020617; padding:14px; border-radius:8px; font-size:13px; color:#93c5fd; border-left:3px solid #3b82f6; margin-top:12px; line-height:1.5;">
-                    <strong style="color:#ffffff;">Actionable Fix Directive:</strong> {f.get('remediation', 'Consult security team.')}
+                <div style="background:#070d1e; border:1px solid #1e3a8a; padding:14px; border-radius:8px; font-size:13px; color:#ffffff; border-left:4px solid #38bdf8; margin-top:12px; line-height:1.5;">
+                    <strong style="color:#38bdf8;">Actionable Fix Directive:</strong> {f.get('remediation', 'Consult security team.')}
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -755,8 +757,8 @@ elif menu == "🎯 Priority Fixes (#1 First)":
 elif menu == "🔍 Findings Operations Center":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Findings Operations & Deep Inspector</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Unified multi-scanner findings catalog with 4-tier perspective inspection</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Findings Operations & Deep Inspector</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Unified multi-scanner findings catalog with 4-tier perspective inspection</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -792,8 +794,8 @@ elif menu == "🔍 Findings Operations Center":
                     <h3 style="margin:0; font-size:20px; font-weight:800; color:#ffffff;">{active_finding['title']}</h3>
                     <span class="pill {sev_pill}">● {active_finding['severity']}</span>
                 </div>
-                <div style="font-size:13px; color:#cbd5e1; margin-top:8px; font-family:monospace;">
-                    Endpoint: <code style="color:#38bdf8;">{active_finding.get('endpoint', '/')}</code> &bull; CVSS 3.1: <strong style="color:#ffffff;">{active_finding.get('cvss_score', 'N/A')}</strong> &bull; CWE: <strong style="color:#ffffff;">{active_finding.get('cwe', 'N/A')}</strong> &bull; Confidence: <strong style="color:#ffffff;">{active_finding.get('confidence', 'CONFIRMED')}</strong>
+                <div style="font-size:13px; color:#e2e8f0; margin-top:8px; font-family:monospace;">
+                    Endpoint: <code style="color:#38bdf8; font-weight:bold;">{active_finding.get('endpoint', '/')}</code> &bull; CVSS 3.1: <strong style="color:#ffffff;">{active_finding.get('cvss_score', 'N/A')}</strong> &bull; CWE: <strong style="color:#ffffff;">{active_finding.get('cwe', 'N/A')}</strong> &bull; Confidence: <strong style="color:#ffffff;">{active_finding.get('confidence', 'CONFIRMED')}</strong>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -838,8 +840,8 @@ elif menu == "🔍 Findings Operations Center":
 elif menu == "🛠️ Remediation Workspace":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Remediation & Fix Verification Workspace</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Track issue resolution workflows from open triage through verified re-scan</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Remediation & Fix Verification Workspace</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Track issue resolution workflows from open triage through verified re-scan</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -856,7 +858,7 @@ elif menu == "🛠️ Remediation Workspace":
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
                     <div>
                         <span style="font-size:15px; font-weight:800; color:#ffffff;">{f['title']}</span>
-                        <div style="font-size:12px; color:#94a3b8; font-family:monospace; margin-top:4px;">{f.get('endpoint', '/')} &bull; Status: <strong style="color:#38bdf8;">{current_status}</strong></div>
+                        <div style="font-size:13px; color:#cbd5e1; font-family:monospace; margin-top:4px;">{f.get('endpoint', '/')} &bull; Status: <strong style="color:#38bdf8;">{current_status}</strong></div>
                     </div>
                 </div>
             </div>
@@ -869,13 +871,13 @@ elif menu == "🛠️ Remediation Workspace":
 elif menu == "🤖 AI Security Copilot":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">AI Security Copilot</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Context-aware AI assistant grounded strictly in authorized assessment telemetry</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">AI Security Copilot</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Context-aware AI assistant grounded strictly in authorized assessment telemetry</p>
     </div>
     """, unsafe_allow_html=True)
 
     # Suggested Prompts
-    st.markdown("<div style='font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:8px;'>SUGGESTED COPILOT QUESTIONS</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; font-weight:800; color:#cbd5e1; margin-bottom:8px;'>SUGGESTED COPILOT QUESTIONS</div>", unsafe_allow_html=True)
     sp1, sp2, sp3 = st.columns(3)
     with sp1:
         st.button("🎯 What should we fix first?", key="q1", use_container_width=True)
@@ -924,8 +926,8 @@ elif menu == "🤖 AI Security Copilot":
 elif menu == "📄 Deliverable Report Center":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Consulting-Grade Deliverable Reports</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Generate white-labeled executive summaries, technical VAPT deliverables, and audit exports</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Consulting-Grade Deliverable Reports</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Generate white-labeled executive summaries, technical VAPT deliverables, and audit exports</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -987,8 +989,8 @@ elif menu == "📄 Deliverable Report Center":
 elif menu == "🔄 Assessment Comparison":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Assessment Comparison & Posture Delta</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Compare posture progression between baseline and target audit checkpoints</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Assessment Comparison & Posture Delta</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Compare posture progression between baseline and target audit checkpoints</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1011,7 +1013,7 @@ elif menu == "🔄 Assessment Comparison":
             <div style="font-size:36px; font-weight:900; color:{'#34d399' if delta_score >= 0 else '#f43f5e'}; margin-top:4px;">
                 {f'+{delta_score}' if delta_score > 0 else delta_score} pts
             </div>
-            <p style="font-size:14px; color:#cbd5e1; margin-top:6px;">Target Posture: <strong style="color:#ffffff;">{t_item['posture_score']}/100</strong> (vs Baseline: <strong style="color:#ffffff;">{b_item['posture_score']}/100</strong>)</p>
+            <p style="font-size:14px; color:#e2e8f0; margin-top:6px;">Target Posture: <strong style="color:#ffffff;">{t_item['posture_score']}/100</strong> (vs Baseline: <strong style="color:#ffffff;">{b_item['posture_score']}/100</strong>)</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1022,8 +1024,8 @@ elif menu == "🔄 Assessment Comparison":
 elif menu == "⚙️ Subsystem Diagnostics":
     st.markdown("""
     <div style="margin-bottom:16px;">
-        <h1 style="font-size:24px; font-weight:800; color:#ffffff; margin:0;">Platform Diagnostics & Capabilities</h1>
-        <p style="font-size:14px; color:#94a3b8; margin:4px 0 0 0;">Live engine capabilities and scanner adapter health</p>
+        <h1 style="font-size:24px; font-weight:900; color:#ffffff; margin:0;">Platform Diagnostics & Capabilities</h1>
+        <p style="font-size:14px; color:#cbd5e1; margin:4px 0 0 0;">Live engine capabilities and scanner adapter health</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1038,7 +1040,7 @@ elif menu == "⚙️ Subsystem Diagnostics":
                     {'● ACTIVE / READY' if h.available else '● OPTIONAL STANDBY'}
                 </span>
             </div>
-            <p style="font-size:13px; color:#cbd5e1; margin:6px 0 0 0;">{h.details}</p>
-            <div style="font-size:12px; color:#94a3b8; font-family:monospace; margin-top:6px;">Engine Version: {h.version or 'Native Core'}</div>
+            <p style="font-size:13px; color:#e2e8f0; margin:6px 0 0 0;">{h.details}</p>
+            <div style="font-size:12px; color:#cbd5e1; font-family:monospace; margin-top:6px;">Engine Version: {h.version or 'Native Core'}</div>
         </div>
         """, unsafe_allow_html=True)
