@@ -6,6 +6,7 @@ Author: VulnForge Security Engineering
 import sys
 import os
 import asyncio
+import concurrent.futures
 import json
 from datetime import datetime, timezone
 import pandas as pd
@@ -14,7 +15,7 @@ import streamlit as st
 # Ensure repository root is on sys.path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from packages.security.ssrf_guard import SSRFGuard
+from packages.security.ssrf_guard import SSRFGuard, TargetValidationError
 from packages.scanner.recon_adapter import ReconAdapter
 from packages.scanner.custom_web_adapter import CustomWebAdapter
 from packages.scanner.health import ScannerHealthDetector
@@ -91,14 +92,18 @@ if "copilot_history" not in st.session_state:
     ]
 
 
-# --- Async Helper ---
+# --- Robust Async Runner for Streamlit ---
 def run_async(coroutine):
+    """Run an async coroutine safely across different event loop contexts in Streamlit."""
     try:
         loop = asyncio.get_event_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    return loop.run_until_complete(coroutine)
+        if loop.is_running():
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                return pool.submit(asyncio.run, coroutine).result()
+        else:
+            return loop.run_until_complete(coroutine)
+    except Exception:
+        return asyncio.run(coroutine)
 
 
 # --- Calculation Helpers ---
@@ -212,65 +217,70 @@ if menu == "🚀 Launch Assessment":
                 st.write("🔒 **Phase 1/5: Scope & SSRF Validation**")
                 
                 # SSRF Guard validation
-                is_safe, error_msg, resolved_ips = SSRFGuard.resolve_and_validate(target_input, allow_local_lab=allow_lab)
-                if not is_safe:
+                try:
+                    resolved_ips = SSRFGuard.resolve_and_validate(target_input, allow_local_lab=allow_lab)
+                    st.write(f"✅ Target validated. Resolved IPs: `{', '.join(resolved_ips)}`")
+                except Exception as e:
                     status.update(label="❌ Scope Validation Failed", state="error")
-                    st.error(f"Target blocked by SSRF Guard: {error_msg}")
+                    st.error(f"Target blocked by SSRF Guard: {str(e)}")
                     st.stop()
                 
-                st.write(f"✅ Target validated. Resolved IPs: `{', '.join(resolved_ips)}`")
-                
-                # Execution
-                st.write("🌐 **Phase 2/5: Reconnaissance & OSINT Engine**")
-                recon_adapter = ReconAdapter()
-                recon_res = run_async(recon_adapter.execute(target_input, {}))
-                st.write(f"Found {len(recon_res.findings)} preliminary recon observations and service metadata.")
-                
-                st.write("⚡ **Phase 3/5: Custom Web Vulnerability Engine**")
-                web_adapter = CustomWebAdapter()
-                web_res = run_async(web_adapter.execute(target_input, {}))
-                st.write(f"Detected {len(web_res.findings)} web security findings (Headers, CORS, Cookies, Exposures).")
-                
-                st.write("🧬 **Phase 4/5: Finding Normalization & Correlation**")
-                raw_findings = recon_res.findings + web_res.findings
-                
-                # Format into uniform objects
-                normalized_findings = []
-                for rf in raw_findings:
-                    normalized_findings.append({
-                        "id": rf.id,
-                        "title": rf.title,
-                        "description": rf.description,
-                        "severity": rf.severity.value,
-                        "cvss_score": rf.cvss_score,
-                        "cwe": rf.cwe,
-                        "category": rf.category,
-                        "asset_target": rf.asset_target,
-                        "endpoint": rf.endpoint,
-                        "impact": rf.impact,
-                        "remediation": rf.remediation,
-                        "references": rf.references,
-                        "scanner": rf.scanner,
-                        "confidence": rf.confidence.value,
-                        "evidence": rf.evidence.model_dump() if rf.evidence else {}
+                try:
+                    # Execution
+                    st.write("🌐 **Phase 2/5: Reconnaissance & OSINT Engine**")
+                    recon_adapter = ReconAdapter()
+                    recon_res = run_async(recon_adapter.execute(target_input, {}))
+                    st.write(f"Found {len(recon_res.findings)} preliminary recon observations and service metadata.")
+                    
+                    st.write("⚡ **Phase 3/5: Custom Web Vulnerability Engine**")
+                    web_adapter = CustomWebAdapter()
+                    web_res = run_async(web_adapter.execute(target_input, {}))
+                    st.write(f"Detected {len(web_res.findings)} web security findings (Headers, CORS, Cookies, Exposures).")
+                    
+                    st.write("🧬 **Phase 4/5: Finding Normalization & Correlation**")
+                    raw_findings = recon_res.findings + web_res.findings
+                    
+                    # Format into uniform objects
+                    normalized_findings = []
+                    for rf in raw_findings:
+                        normalized_findings.append({
+                            "id": rf.id,
+                            "title": rf.title,
+                            "description": rf.description,
+                            "severity": rf.severity.value,
+                            "cvss_score": rf.cvss_score,
+                            "cwe": rf.cwe,
+                            "category": rf.category,
+                            "asset_target": rf.asset_target,
+                            "endpoint": rf.endpoint,
+                            "impact": rf.impact,
+                            "remediation": rf.remediation,
+                            "references": rf.references,
+                            "scanner": rf.scanner,
+                            "confidence": rf.confidence.value,
+                            "evidence": rf.evidence.model_dump() if rf.evidence else {}
+                        })
+                    
+                    st.write("📈 **Phase 5/5: Contextual Risk Analysis**")
+                    posture_score = calculate_posture_score(normalized_findings)
+                    
+                    # Save into session state
+                    st.session_state.current_findings = normalized_findings
+                    st.session_state.assessment_history.append({
+                        "id": f"scan-{len(st.session_state.assessment_history) + 1}",
+                        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                        "target": target_input,
+                        "profile": assessment_profile,
+                        "posture_score": posture_score,
+                        "findings_count": len(normalized_findings),
+                        "findings": normalized_findings
                     })
-                
-                st.write("📈 **Phase 5/5: Contextual Risk Analysis**")
-                posture_score = calculate_posture_score(normalized_findings)
-                
-                # Save into session state
-                st.session_state.current_findings = normalized_findings
-                st.session_state.assessment_history.append({
-                    "id": f"scan-{len(st.session_state.assessment_history) + 1}",
-                    "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
-                    "target": target_input,
-                    "profile": assessment_profile,
-                    "posture_score": posture_score,
-                    "findings_count": len(normalized_findings),
-                    "findings": normalized_findings
-                })
-                
-                status.update(label=f"🎉 Assessment Completed — Posture Score: {posture_score}/100", state="complete")
+                    
+                    status.update(label=f"🎉 Assessment Completed — Posture Score: {posture_score}/100", state="complete")
+                except Exception as scan_err:
+                    status.update(label="❌ Scan Failed", state="error")
+                    st.error(f"Error during scan execution: {str(scan_err)}")
+                    st.stop()
             
             st.success(f"Assessment completed successfully! Found **{len(normalized_findings)} findings**. Navigate to the **Security Dashboard** or **What Should I Fix First?** to inspect results.")
 
