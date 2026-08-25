@@ -87,16 +87,27 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Dark Dropdowns & Selectboxes */
+    /* Dark Dropdowns & Selectboxes (Non-editable, Pure Clickable Picker) */
     div[data-baseweb="select"] > div {
         background-color: #131a2b !important;
         border: 1px solid #334155 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
+        cursor: pointer !important;
+    }
+    div[data-baseweb="select"] input {
+        caret-color: transparent !important;
+        cursor: pointer !important;
+        user-select: none !important;
+    }
+    div[data-baseweb="select"] {
+        cursor: pointer !important;
+        user-select: none !important;
     }
     div[data-baseweb="select"] * {
         color: #ffffff !important;
         font-weight: 600 !important;
+        cursor: pointer !important;
     }
     div[data-baseweb="popover"], div[data-baseweb="menu"] {
         background-color: #131a2b !important;
@@ -231,6 +242,25 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+import streamlit.components.v1 as components
+components.html("""
+<script>
+try {
+    const doc = window.parent.document;
+    const blockTypingInSelects = () => {
+        doc.querySelectorAll('div[data-baseweb="select"] input').forEach(input => {
+            if (!input.readOnly) {
+                input.readOnly = true;
+                input.style.caretColor = 'transparent';
+                input.style.cursor = 'pointer';
+            }
+        });
+    };
+    setInterval(blockTypingInSelects, 300);
+} catch(e) {}
+</script>
+""", height=0, width=0)
 
 
 # --- Session State Initialization ---
