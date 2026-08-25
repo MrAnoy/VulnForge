@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vulnforge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vulnforge
+      POSTGRES_PASSWORD: vulnforge_password
+      POSTGRES_DB: vulnforge_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vulnforge -d vulnforge_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vulnforge-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.api
+    container_name: vulnforge-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://vulnforge:vulnforge_password@postgres:5432/vulnforge_db"
+      SYNC_DATABASE_URL: "postgresql://vulnforge:vulnforge_password@postgres:5432/vulnforge_db"
+      REDIS_URL: "redis://redis:6379/0"
+      SECRET_KEY: "vulnforge-super-secret-production-change-me-32-chars-min"
+      ENVIRONMENT: "production"
+      DEBUG: "false"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.web
+    container_name: vulnforge-web
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx:alpine
+    container_name: vulnforge-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+
+volumes:
+  postgres_data:

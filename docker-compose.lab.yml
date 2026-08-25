@@ -1,0 +1,25 @@
+version: '3.8'
+
+# VulnForge Authorized Local Lab Testbed
+# Used strictly for safe authorized local validation without scanning third-party systems.
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:v16.0.0
+    container_name: vulnforge-lab-juiceshop
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3000"
+    labels:
+      vulnforge.lab.target: "true"
+      vulnforge.lab.type: "owasp-juice-shop"
+
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: vulnforge-lab-dvwa
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3002:80"
+    labels:
+      vulnforge.lab.target: "true"
+      vulnforge.lab.type: "dvwa"
