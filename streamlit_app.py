@@ -112,7 +112,7 @@ def calculate_posture_score(findings):
         return 100.0
     deductions = 0
     for f in findings:
-        sev = f.get("severity", "LOW")
+        sev = str(f.get("severity", "LOW")).upper()
         if sev == "CRITICAL":
             deductions += 25
         elif sev == "HIGH":
@@ -226,41 +226,59 @@ if menu == "🚀 Launch Assessment":
                     st.stop()
                 
                 try:
-                    # Execution
+                    # Phase 2: Recon
                     st.write("🌐 **Phase 2/5: Reconnaissance & OSINT Engine**")
                     recon_adapter = ReconAdapter()
-                    recon_res = run_async(recon_adapter.execute(target_input, {}))
-                    st.write(f"Found {len(recon_res.findings)} preliminary recon observations and service metadata.")
+                    raw_recon = run_async(recon_adapter.execute(target_input, {}))
+                    parsed_recon = run_async(recon_adapter.parse(raw_recon))
+                    recon_findings = run_async(recon_adapter.normalize(parsed_recon, target_input))
+                    st.write(f"Recon completed: Discovered {len(recon_findings)} observation(s).")
                     
+                    # Phase 3: Web Security
                     st.write("⚡ **Phase 3/5: Custom Web Vulnerability Engine**")
                     web_adapter = CustomWebAdapter()
-                    web_res = run_async(web_adapter.execute(target_input, {}))
-                    st.write(f"Detected {len(web_res.findings)} web security findings (Headers, CORS, Cookies, Exposures).")
+                    raw_web = run_async(web_adapter.execute(target_input, {}))
+                    web_findings = run_async(web_adapter.normalize(raw_web, target_input))
+                    st.write(f"Web checks completed: Detected {len(web_findings)} security item(s).")
                     
+                    # Phase 4: Correlation & Deduplication
                     st.write("🧬 **Phase 4/5: Finding Normalization & Correlation**")
-                    raw_findings = recon_res.findings + web_res.findings
+                    all_findings_raw = recon_findings + web_findings
                     
                     # Format into uniform objects
                     normalized_findings = []
-                    for rf in raw_findings:
+                    for idx, rf in enumerate(all_findings_raw, start=1):
+                        sev_str = rf.severity.value if hasattr(rf.severity, "value") else str(rf.severity)
+                        conf_str = rf.confidence.value if hasattr(rf.confidence, "value") else str(rf.confidence)
+                        
+                        ev_dict = {}
+                        if rf.evidence:
+                            if hasattr(rf.evidence, "model_dump"):
+                                ev_dict = rf.evidence.model_dump()
+                            elif isinstance(rf.evidence, dict):
+                                ev_dict = rf.evidence
+                            else:
+                                ev_dict = {"snippet": str(rf.evidence)}
+                        
                         normalized_findings.append({
-                            "id": rf.id,
+                            "id": f"find-{idx}",
                             "title": rf.title,
                             "description": rf.description,
-                            "severity": rf.severity.value,
-                            "cvss_score": rf.cvss_score,
-                            "cwe": rf.cwe,
-                            "category": rf.category,
+                            "severity": sev_str,
+                            "cvss_score": float(rf.cvss_score) if rf.cvss_score else 0.0,
+                            "cwe": rf.cwe or "CWE-200",
+                            "category": rf.category or "Web Security",
                             "asset_target": rf.asset_target,
-                            "endpoint": rf.endpoint,
-                            "impact": rf.impact,
-                            "remediation": rf.remediation,
-                            "references": rf.references,
-                            "scanner": rf.scanner,
-                            "confidence": rf.confidence.value,
-                            "evidence": rf.evidence.model_dump() if rf.evidence else {}
+                            "endpoint": rf.endpoint or "/",
+                            "impact": rf.impact or "Potential security risk.",
+                            "remediation": rf.remediation or "Follow industry remediation best practices.",
+                            "references": rf.references or ["https://owasp.org"],
+                            "scanner": rf.scanner or "VulnForge Engine",
+                            "confidence": conf_str,
+                            "evidence": ev_dict
                         })
                     
+                    # Phase 5: Risk Scoring
                     st.write("📈 **Phase 5/5: Contextual Risk Analysis**")
                     posture_score = calculate_posture_score(normalized_findings)
                     
@@ -374,12 +392,12 @@ elif menu == "🎯 What Should I Fix First?":
         # Sort findings by severity weight and CVSS
         def get_rank_score(f):
             sev_weights = {"CRITICAL": 100, "HIGH": 70, "MEDIUM": 40, "LOW": 15, "INFO": 5}
-            return sev_weights.get(f.get("severity", "LOW"), 10) + f.get("cvss_score", 0.0) * 5
+            return sev_weights.get(str(f.get("severity", "LOW")).upper(), 10) + float(f.get("cvss_score", 0.0)) * 5
 
         sorted_findings = sorted(findings, key=get_rank_score, reverse=True)
 
         for idx, f in enumerate(sorted_findings[:5], start=1):
-            sev = f["severity"]
+            sev = str(f["severity"]).upper()
             badge_class = f"badge-{sev.lower()}"
             
             with st.container():
@@ -445,7 +463,7 @@ elif menu == "🔍 Vulnerability Inspector":
         with tab4:
             st.markdown("### Executive Risk Evaluation")
             st.write(f"• **Potential Breach Impact:** {finding.get('impact', 'Moderate operational impact.')}")
-            st.write(f"• **Remediation Urgency:** {'Immediate (24hr SLA)' if finding['severity'] in ['CRITICAL', 'HIGH'] else 'Standard Sprint (14-day SLA)'}")
+            st.write(f"• **Remediation Urgency:** {'Immediate (24hr SLA)' if str(finding['severity']).upper() in ['CRITICAL', 'HIGH'] else 'Standard Sprint (14-day SLA)'}")
 
 
 # ==============================================================================
@@ -476,7 +494,7 @@ elif menu == "🤖 AI Security Copilot":
             reply = r"To block `.git/HEAD` exposures: Add a rule to your web server (e.g. Nginx `location ~ /\.git { deny all; }`) to return a 403 Forbidden for any requests targeting hidden repository directories."
         elif "top" in query_lower or "summary" in query_lower:
             if findings:
-                crit_high = [f['title'] for f in findings if f['severity'] in ['CRITICAL', 'HIGH']]
+                crit_high = [f['title'] for f in findings if str(f['severity']).upper() in ['CRITICAL', 'HIGH']]
                 reply = f"You currently have {len(findings)} findings. Top priority issues to address first are: " + (", ".join(crit_high) if crit_high else "No critical/high severity items found!")
             else:
                 reply = "No active findings detected in session. Run an assessment to generate security telemetry."
