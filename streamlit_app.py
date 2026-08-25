@@ -88,32 +88,32 @@ st.markdown("""
     }
 
     /* Dark Dropdowns & Selectboxes (Non-editable, Pure Clickable Picker) */
-    div[data-baseweb="select"] > div {
+    div[data-baseweb="select"] > div, div.stSelectbox > div {
         background-color: #131a2b !important;
         border: 1px solid #334155 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
         cursor: pointer !important;
     }
-    div[data-baseweb="select"] input {
+    div[data-baseweb="select"] input, div.stSelectbox input {
         caret-color: transparent !important;
         cursor: pointer !important;
         user-select: none !important;
     }
-    div[data-baseweb="select"] {
+    div[data-baseweb="select"], div.stSelectbox {
         cursor: pointer !important;
         user-select: none !important;
     }
-    div[data-baseweb="select"] * {
+    div[data-baseweb="select"] *, div.stSelectbox * {
         color: #ffffff !important;
         font-weight: 600 !important;
         cursor: pointer !important;
     }
-    div[data-baseweb="popover"], div[data-baseweb="menu"] {
+    div[data-baseweb="popover"], div[data-baseweb="menu"], div[data-testid="stSelectboxVirtualDropdown"] {
         background-color: #131a2b !important;
         border: 1px solid #334155 !important;
     }
-    div[data-baseweb="popover"] li {
+    div[data-baseweb="popover"] li, div[data-testid="stSelectboxVirtualDropdown"] * {
         color: #ffffff !important;
     }
 
@@ -243,24 +243,36 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-import streamlit.components.v1 as components
-components.html("""
-<script>
-try {
-    const doc = window.parent.document;
-    const blockTypingInSelects = () => {
-        doc.querySelectorAll('div[data-baseweb="select"] input').forEach(input => {
-            if (!input.readOnly) {
-                input.readOnly = true;
-                input.style.caretColor = 'transparent';
-                input.style.cursor = 'pointer';
+st.markdown(
+    """
+    <img src="x" onerror="
+        (function() {
+            var blockTyping = function() {
+                var doc = document;
+                try { doc = window.parent.document; } catch(e) {}
+                doc.querySelectorAll('div.stSelectbox input, div[data-baseweb=select] input').forEach(function(input) {
+                    if (!input.dataset.typingBlocked) {
+                        input.dataset.typingBlocked = 'true';
+                        input.style.caretColor = 'transparent';
+                        input.addEventListener('keydown', function(e) {
+                            if (['Tab', 'Escape', 'Enter', 'ArrowUp', 'ArrowDown'].indexOf(e.key) !== -1) {
+                                return;
+                            }
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }, true);
+                    }
+                });
+            };
+            blockTyping();
+            if (!window.blockTypingIntervalId) {
+                window.blockTypingIntervalId = setInterval(blockTyping, 300);
             }
-        });
-    };
-    setInterval(blockTypingInSelects, 300);
-} catch(e) {}
-</script>
-""", height=0, width=0)
+        })()
+    " style="display:none;" />
+    """,
+    unsafe_allow_html=True
+)
 
 
 # --- Session State Initialization ---
